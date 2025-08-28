@@ -7,6 +7,7 @@ import { FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 import type { ILogin } from '../../../Domain/Interfaces/ILogin';
 import { useLogin } from '../../Hooks/useLogin';
 import { useUserAuthStore } from '../../../Infrastructure/Store/userAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 // Schema de validación con Zod
 const loginSchema = z.object({
@@ -28,6 +29,7 @@ export const Login: React.FC<LoginFormProps> = ({ onLoginSuccess, onLoginError }
   const [showPassword, setShowPassword] = useState(false);
   const { loginUser, loading } = useLogin();
   const { setUser } = useUserAuthStore();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -42,7 +44,6 @@ export const Login: React.FC<LoginFormProps> = ({ onLoginSuccess, onLoginError }
   const onSubmit = async (loginData: LoginFormData) => {
     try {
       const loginResponse = await loginUser(loginData);
-      
       if (loginResponse) {
         setUser({
           token: loginResponse.token,
@@ -52,6 +53,7 @@ export const Login: React.FC<LoginFormProps> = ({ onLoginSuccess, onLoginError }
         
         localStorage.setItem('userProfile', JSON.stringify(loginResponse))
         onLoginSuccess?.(loginData);
+        navigate('/dashboard');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión';
